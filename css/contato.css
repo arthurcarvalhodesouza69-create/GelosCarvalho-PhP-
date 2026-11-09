@@ -1,0 +1,72 @@
+.form-sucesso {
+    display: none;
+    background: rgba(14,165,233,0.15);
+    border: 1px solid var(--azul-gelo);
+    border-radius: var(--raio);
+    padding: 24px;
+    text-align: center;
+    margin-top: 20px;
+    animation: fadeUp 0.5s ease;
+}
+
+.form-sucesso.visivel { display: block; }
+
+.form-sucesso .sucesso-icone {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+}
+
+.form-sucesso h4 {
+    color: var(--azul-gelo);
+    margin-bottom: 8px;
+    font-family: var(--fonte-titulo);
+    letter-spacing: 1px;
+}
+
+.form-sucesso p {
+    color: var(--cinza-medio);
+    font-size: 0.88rem;
+}
+
+/* Mapa placeholder */
+.mapa-placeholder {
+    background: rgba(12,42,69,0.7);
+    border: 1px solid rgba(14,165,233,0.2);
+    border-radius: var(--raio-grande);
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 32px;
+    text-align: center;
+}
+
+.mapa-placeholder span { font-size: 3rem; }
+.mapa-placeholder h4 { color: var(--branco); font-size: 1rem; }
+.mapa-placeholder p  { color: var(--cinza-medio); font-size: 0.85rem; }
+
+/* WhatsApp botão flutuante */
+.whatsapp-float {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 60px;
+    height: 60px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    box-shadow: 0 8px 32px rgba(37,211,102,0.4);
+    z-index: 999;
+    transition: all 0.3s ease;
+    animation: pulsar 3s ease-in-out infinite;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 40px rgba(37,211,102,0.6);
+}

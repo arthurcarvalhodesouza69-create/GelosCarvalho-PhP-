@@ -1,36 +1,14 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Conheça a história da Gelos Carvalho, empresa familiar de Serra do Ramalho, Agrovila 9.">
-    <title>Sobre Nós | Gelos Carvalho</title>
-    <link rel="icon" type="image/jpeg" href="img/Gelos_Carvalho_Logo_Mestre.png">
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-    <audio autoplay loop> <source src="audio/E_TA_CALOR.mp3" type="audio/mpeg"> </audio>
-    <!-- ======== HEADER ======== -->
-    <header>
-        <div class="header-inner">
-            <a href="index.html" class="logo">
-                <div class="logo-icone"><img src="img/Gelos_Carvalho_Logo_Mestre.png" alt="logo_gelo"></div>
-                <div class="logo-texto">
-                    <span class="logo-nome">Gelos Carvalho</span>
-                    <span class="logo-slogan">Frescor que você sente</span>
-                </div>
-            </a>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="sobre.html" class="ativo">Sobre</a></li>
-                    <li><a href="servicos.html">Serviços</a></li>
-                    <li><a href="galeria.html">Galeria</a></li>
-                    <li><a href="contato.html">Contato</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+<?php
+require_once __DIR__ . '/includes/site.php';
+
+$pagina = [
+    'titulo'    => 'Sobre Nós | Gelos Carvalho',
+    'descricao' => 'Conheça a história da Gelos Carvalho, empresa familiar de Serra do Ramalho, Agrovila 9.',
+    'ativo'     => 'sobre.php',
+    'audio'     => 'E_TA_CALOR.mp3',
+];
+require __DIR__ . '/includes/site_topo.php';
+?>
 
     <!-- ======== MAIN ======== -->
     <main>
@@ -66,27 +44,15 @@
                     <p>Nosso compromisso desde o primeiro dia é simples: entregar gelo de qualidade, com higiene, pontualidade e um preço justo para todos.</p>
 
                     <div class="valores-lista">
+<?php foreach (diferenciais_da_secao('sobre') as $valor): ?>
                         <div class="valor-item">
-                            <div class="valor-icone">🫱🏾‍🫲🏽</div>
+                            <div class="valor-icone"><?= e($valor['icone']) ?></div>
                             <div class="valor-texto">
-                                <h4>Confiança acima de tudo</h4>
-                                <p>Construímos nossa reputação entregando o que prometemos, sempre com transparência e honestidade.</p>
+                                <h4><?= e($valor['titulo']) ?></h4>
+                                <p><?= e($valor['descricao']) ?></p>
                             </div>
                         </div>
-                        <div class="valor-item">
-                            <div class="valor-icone">💎</div>
-                            <div class="valor-texto">
-                                <h4>Qualidade sem abrir mão</h4>
-                                <p>Água filtrada, processo limpo e embalagens seguras. Cada detalhe importa no que entregamos.</p>
-                            </div>
-                        </div>
-                        <div class="valor-item">
-                            <div class="valor-icone">🌱</div>
-                            <div class="valor-texto">
-                                <h4>Crescimento com raízes</h4>
-                                <p>Crescemos pensando na nossa comunidade. Cada venda fortalece famílias e a economia local.</p>
-                            </div>
-                        </div>
+<?php endforeach; ?>
                     </div>
                 </div>
             </div>
@@ -95,22 +61,12 @@
 
             <!-- ESTATÍSTICAS -->
             <div class="stats-section animar">
+<?php foreach (estatisticas_da_pagina('sobre') as $estatistica): ?>
                 <div class="stat-item">
-                    <div class="numero">3+</div>
-                    <p>Anos no Mercado</p>
+                    <div class="numero"><?= e($estatistica['numero']) ?></div>
+                    <p><?= e($estatistica['rotulo']) ?></p>
                 </div>
-                <div class="stat-item">
-                    <div class="numero">500+</div>
-                    <p>Clientes Atendidos</p>
-                </div>
-                <div class="stat-item">
-                    <div class="numero">2</div>
-                    <p>Produtos Disponíveis</p>
-                </div>
-                <div class="stat-item">
-                    <div class="numero">100%</div>
-                    <p>Satisfação Garantida</p>
-                </div>
+<?php endforeach; ?>
             </div>
 
             <div class="divisor"></div>
@@ -151,38 +107,18 @@
             </div>
 
             <div class="equipe-grid animar" style="margin-bottom:40px;">
+<?php foreach (consulta('SELECT * FROM membros_equipe WHERE ativo = 1 ORDER BY ordem, id') as $membro): ?>
                 <div class="membro-card">
                     <div class="membro-foto">
-                        <img src="img/arthur_carvalho.jpg" alt="Arthur Carvalho de Souza — Fundador e Gestor">
+                        <img src="<?= e($membro['foto']) ?>" alt="<?= e($membro['nome'] . ' — ' . $membro['cargo']) ?>">
                     </div>
                     <div class="membro-info">
-                        <h3>Arthur Carvalho de Souza</h3>
-                        <div class="cargo">Fundador &amp; Gestor</div>
-                        <p>Responsável pela gestão, vendas e expansão dos negócios. Empreendedor desde cedo, acredita que o sertão tem muito potencial.</p>
+                        <h3><?= e($membro['nome']) ?></h3>
+                        <div class="cargo"><?= e($membro['cargo']) ?></div>
+                        <p><?= e($membro['descricao']) ?></p>
                     </div>
                 </div>
-
-                <div class="membro-card">
-                    <div class="membro-foto">
-                        <img src="img/mae__carvalho.jpg" alt="Mãe — Diretora de Produção">
-                    </div>
-                    <div class="membro-info">
-                        <h3>Mãe Carvalho</h3>
-                        <div class="cargo">Direção de Produção</div>
-                        <p>A matriarca da família garante que cada pacote seja produzido com capricho, higiene e o cuidado de quem coloca amor no trabalho.</p>
-                    </div>
-                </div>
-
-                <div class="membro-card">
-                    <div class="membro-foto">
-                        <img src="img/irma_carvalho.jpg" alt="Irmã — Atendimento e Logística">
-                    </div>
-                    <div class="membro-info">
-                        <h3>Irmã Carvalho</h3>
-                        <div class="cargo">Atendimento &amp; Logística</div>
-                        <p>Responsável pelo atendimento ao cliente e pela organização das entregas. Sua dedicação garante que ninguém fique esperando.</p>
-                    </div>
-                </div>
+<?php endforeach; ?>
             </div>
 
             <!-- LISTA ORDENADA — LINHA DO TEMPO -->
@@ -203,52 +139,7 @@
         </div>
     </main>
 
-    <!-- ======== FOOTER ======== -->
-    <footer>
-        <div class="footer-grid">
-            <div class="footer-marca">
-                <div class="logo">
-                    <div class="logo-icone"><img src="img/Gelos_Carvalho_Logo_Mestre.png" alt="logo_gelo"></div>
-                    <div class="logo-texto">
-                        <span class="logo-nome">Gelos Carvalho</span>
-                        <span class="logo-slogan">Frescor que você sente</span>
-                    </div>
-                </div>
-                <p>Empresa familiar de fabricação e venda de gelo, localizada na Agrovila 9, Serra do Ramalho — Bahia.</p>
-                <a href="contato.html" class="btn btn-primario" style="font-size:0.78rem; padding:10px 22px;">Fazer Pedido</a>
-            </div>
-            <div>
-                <h4 class="footer-titulo">Navegação</h4>
-                <ul class="footer-links">
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="sobre.html">Sobre Nós</a></li>
-                    <li><a href="servicos.html">Serviços e Produtos</a></li>
-                    <li><a href="galeria.html">Galeria</a></li>
-                    <li><a href="contato.html">Contato</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="footer-titulo">Produtos</h4>
-                <ul class="footer-links">
-                    <li><a href="servicos.html">Pacote R$ 5,00</a></li>
-                    <li><a href="servicos.html">Pacote R$ 7,00</a></li>
-                    <li><a href="contato.html">Encomendas</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="footer-titulo">Contato</h4>
-                <div class="footer-contato">
-                    <p>📍 Agrovila 9, Serra do Ramalho — BA</p>
-                    <p>📞 <a href="tel:+5577920545000" style="color:var(--azul-gelo);">+55 77 9205-4500</a></p>
-                    <p>🕐 Segunda a Sábado: 7h–19h</p>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 Gelos Carvalho. Todos os direitos reservados.</p>
-            <p>Desenvolvido por <span>Arthur Carvalho de Souza</span> &mdash; Programação Web &mdash; IF Baiano</p>
-        </div>
-    </footer>
+<?php require __DIR__ . '/includes/site_rodape.php'; ?>
 
     <script>
         const observer = new IntersectionObserver((entries) => {

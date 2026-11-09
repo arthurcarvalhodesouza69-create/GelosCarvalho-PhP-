@@ -1,85 +1,15 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Galeria de fotos da Gelos Carvalho — nossa fábrica, produtos e atendimentos.">
-    <title>Galeria | Gelos Carvalho</title>
-    <link rel="icon" type="image/jpeg" href="img/Gelos_Carvalho_Logo_Mestre.png">
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        /* Lightbox */
-        .lightbox {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(6, 24, 41, 0.95);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-            cursor: pointer;
-        }
-        .lightbox.aberto {
-            display: flex;
-        }
-        .lightbox-img {
-            max-width: 90vw;
-            max-height: 85vh;
-            border-radius: 16px;
-            border: 1px solid rgba(14,165,233,0.4);
-            box-shadow: 0 0 80px rgba(14,165,233,0.2);
-            object-fit: contain;
-            animation: zoomIn 0.3s ease;
-        }
-        @keyframes zoomIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to   { opacity: 1; transform: scale(1); }
-        }
-        .lightbox-fechar {
-            position: absolute;
-            top: 20px; right: 24px;
-            color: white;
-            font-size: 2rem;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        .lightbox-fechar:hover { color: var(--azul-gelo); }
-        .lightbox-legenda {
-            position: absolute;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: var(--cinza-medio);
-            font-size: 0.88rem;
-            letter-spacing: 1px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <audio autoplay loop> <source src="audio/aquatic_ambience.mp3" type="audio/mpeg"> </audio>
-    <!-- ======== HEADER ======== -->
-    <header>
-        <div class="header-inner">
-            <a href="index.html" class="logo">
-                <div class="logo-icone"><img src="img/Gelos_Carvalho_Logo_Mestre.png" alt="logo_gelo"></div>
-                <div class="logo-texto">
-                    <span class="logo-nome">Gelos Carvalho</span>
-                    <span class="logo-slogan">Frescor que você sente</span>
-                </div>
-            </a>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="sobre.html">Sobre</a></li>
-                    <li><a href="servicos.html">Serviços</a></li>
-                    <li><a href="galeria.html" class="ativo">Galeria</a></li>
-                    <li><a href="contato.html">Contato</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+<?php
+require_once __DIR__ . '/includes/site.php';
+
+$pagina = [
+    'titulo'    => 'Galeria | Gelos Carvalho',
+    'descricao' => 'Galeria de fotos da Gelos Carvalho — nossa fábrica, produtos e atendimentos.',
+    'ativo'     => 'galeria.php',
+    'audio'     => 'aquatic_ambience.mp3',
+    'css'       => 'css/galeria.css',
+];
+require __DIR__ . '/includes/site_topo.php';
+?>
 
     <!-- LIGHTBOX -->
     <div class="lightbox" id="lightbox" onclick="fecharLightbox()">
@@ -111,74 +41,20 @@
             <!-- FILTROS -->
             <div class="galeria-filtros animar">
                 <button class="filtro-btn ativo" data-filtro="todos">Todos</button>
-                <button class="filtro-btn" data-filtro="fabrica">Fábrica</button>
-                <button class="filtro-btn" data-filtro="produtos">Produtos</button>
-                <button class="filtro-btn" data-filtro="atendimento">Atendimentos</button>
-                <button class="filtro-btn" data-filtro="regiao">Nossa Região</button>
+<?php foreach (consulta('SELECT id, nome FROM categorias_galeria ORDER BY ordem, id') as $categoria): ?>
+                <button class="filtro-btn" data-filtro="<?= (int) $categoria['id'] ?>"><?= e($categoria['nome']) ?></button>
+<?php endforeach; ?>
             </div>
 
             <!-- GRID GALERIA -->
             <div class="galeria-grid animar">
 
-                <div class="galeria-item grande" data-categoria="fabrica" onclick="abrirLightbox(this)">
-                    <img src="img/galeria-fabrica-geral.jpg" alt="Vista geral da fábrica Gelos Carvalho">
-                    <div class="galeria-overlay"><p>🏭 Nossa Fábrica — Vista Geral</p></div>
+<?php foreach (consulta('SELECT * FROM fotos_galeria WHERE ativo = 1 ORDER BY ordem, id') as $foto): ?>
+                <div class="galeria-item<?= $foto['grande'] ? ' grande' : '' ?>" data-categoria="<?= (int) $foto['categoria_id'] ?>" onclick="abrirLightbox(this)">
+                    <img src="<?= e($foto['imagem']) ?>" alt="<?= e($foto['texto_alt']) ?>">
+                    <div class="galeria-overlay"><p><?= e($foto['legenda']) ?></p></div>
                 </div>
-
-                <div class="galeria-item" data-categoria="produtos" onclick="abrirLightbox(this)">
-                    <img src="img/galeria-pacote-5.jpg" alt="Pacote de gelo R$5">
-                    <div class="galeria-overlay"><p>🧊 Pacote R$ 5,00</p></div>
-                </div>
-
-                <div class="galeria-item" data-categoria="fabrica" onclick="abrirLightbox(this)">
-                    <img src="img/galeria-maquina.jpg" alt="Máquina de gelo em operação">
-                    <div class="galeria-overlay"><p>⚙️ Máquina em Operação</p></div>
-                </div>
-
-                <div class="galeria-item" data-categoria="produtos" onclick="abrirLightbox(this)">
-                    <img src="img/galeria-pacote-7.jpg" alt="Pacote de gelo R$7 — Família">
-                    <div class="galeria-overlay"><p>🎉 Pacote Família R$ 7,00</p></div>
-                </div>
-
-                <div class="galeria-item" data-categoria="regiao" onclick="abrirLightbox(this)">
-                    <img src="img/galeria-agrovila.jpg" alt="Agrovila 8 — Serra do Ramalho">
-                    <div class="galeria-overlay"><p>📍 Agrovila 9, Serra do Ramalho</p></div>
-                </div>
-
-                <div class="galeria-item grande" data-categoria="atendimento" onclick="abrirLightbox(this)">
-                    <img src="img/galeria-entrega.jpg" alt="Entrega de gelo ao cliente">
-                    <div class="galeria-overlay"><p>🚗 Entrega Satisfeita!</p></div>
-                </div>
-
-                <div class="galeria-item" data-categoria="fabrica" onclick="abrirLightbox(this)">
-                    <img src="img/galeria-estoque.jpg" alt="Estoque de pacotes de gelo">
-                    <div class="galeria-overlay"><p>📦 Estoque Organizado</p></div>
-                </div>
-
-                <div class="galeria-item" data-categoria="atendimento" onclick="abrirLightbox(this)">
-                    <img src="img/galeria-cliente.jpg" alt="Cliente satisfeito com o gelo">
-                    <div class="galeria-overlay"><p>😄 Cliente Feliz!</p></div>
-                </div>
-
-                <div class="galeria-item" data-categoria="regiao" onclick="abrirLightbox(this)">
-                    <img src="img/galeria-sertao.jpg" alt="Paisagem do Sertão da Bahia">
-                    <div class="galeria-overlay"><p>🌵 Sertão Baiano</p></div>
-                </div>
-
-                <div class="galeria-item" data-categoria="produtos" onclick="abrirLightbox(this)">
-                    <img src="img/galeria-gelo-mesa.jpg" alt="Gelo servido em mesa de evento">
-                    <div class="galeria-overlay"><p>🎊 Gelo no Evento</p></div>
-                </div>
-
-                <div class="galeria-item" data-categoria="fabrica" onclick="abrirLightbox(this)">
-                    <img src="img/galeria-producao.jpg" alt="Processo de produção do gelo">
-                    <div class="galeria-overlay"><p>🔬 Processo de Produção</p></div>
-                </div>
-
-                <div class="galeria-item" data-categoria="atendimento" onclick="abrirLightbox(this)">
-                    <img src="img/galeria-churrasco.jpg" alt="Gelo usado em churrasco de cliente">
-                    <div class="galeria-overlay"><p>🍖 Churrasco do Cliente!</p></div>
-                </div>
+<?php endforeach; ?>
 
             </div>
 
@@ -191,75 +67,20 @@
             </div>
 
             <div class="cards-grid animar" style="margin-bottom:40px;">
+<?php foreach (consulta('SELECT * FROM depoimentos WHERE ativo = 1 ORDER BY ordem, id') as $depoimento): ?>
                 <article class="card">
-                    <div style="color:var(--dourado); font-size:1.2rem; margin-bottom:12px;">⭐⭐⭐⭐⭐</div>
-                    <p style="font-style:italic; color:var(--cinza-medio); font-size:0.9rem; margin-bottom:16px;">"O gelo da Gelos Carvalho é o melhor da região! Sempre limpo, bem embalado e entregue rapidinho. Não compro de outro lugar."</p>
-                    <h4 style="color:var(--branco); font-size:0.85rem;">— Seu João Emanuel</h4>
-                    <span style="color:var(--azul-gelo); font-size:0.75rem;">Agrovila 2</span>
+                    <div style="color:var(--dourado); font-size:1.2rem; margin-bottom:12px;" aria-label="Nota <?= (int) $depoimento['nota'] ?> de 5"><?= str_repeat('⭐', (int) $depoimento['nota']) ?></div>
+                    <p style="font-style:italic; color:var(--cinza-medio); font-size:0.9rem; margin-bottom:16px;">"<?= e($depoimento['texto']) ?>"</p>
+                    <h4 style="color:var(--branco); font-size:0.85rem;">— <?= e($depoimento['autor']) ?></h4>
+                    <span style="color:var(--azul-gelo); font-size:0.75rem;"><?= e($depoimento['localidade']) ?></span>
                 </article>
-                <article class="card">
-                    <div style="color:var(--dourado); font-size:1.2rem; margin-bottom:12px;">⭐⭐⭐⭐⭐</div>
-                    <p style="font-style:italic; color:var(--cinza-medio); font-size:0.9rem; margin-bottom:16px;">"Comprei para o meu aniversário e todo mundo amou! O pacote família (R$7) durou a festa toda. Recomendo de olhos fechados! É beeem mais frio que o coração da morena."</p>
-                    <h4 style="color:var(--branco); font-size:0.85rem;">— Arthur Carvalho</h4>
-                    <span style="color:var(--azul-gelo); font-size:0.75rem;">Serra do Ramalho</span>
-                </article>
-                <article class="card">
-                    <div style="color:var(--dourado); font-size:1.2rem; margin-bottom:12px;">⭐⭐⭐⭐⭐</div>
-                    <p style="font-style:italic; color:var(--cinza-medio); font-size:0.9rem; margin-bottom:16px;">"Atendimento nota 10. Fiz o pedido de manhã e já chegou antes do meio-dia. Família Carvalho de confiança total!"</p>
-                    <h4 style="color:var(--branco); font-size:0.85rem;">— Barack Obama</h4>
-                    <span style="color:var(--azul-gelo); font-size:0.75rem;">Agrovila 8</span>
-                </article>
+<?php endforeach; ?>
             </div>
 
         </div>
     </main>
 
-    <!-- ======== FOOTER ======== -->
-    <footer>
-        <div class="footer-grid">
-            <div class="footer-marca">
-                <div class="logo">
-                    <div class="logo-icone"><img src="img/Gelos_Carvalho_Logo_Mestre.png" alt="logo_gelo"></div>
-                    <div class="logo-texto">
-                        <span class="logo-nome">Gelos Carvalho</span>
-                        <span class="logo-slogan">Frescor que você sente</span>
-                    </div>
-                </div>
-                <p>Empresa familiar de fabricação e venda de gelo, localizada na Agrovila 9, Serra do Ramalho — Bahia.</p>
-                <a href="contato.html" class="btn btn-primario" style="font-size:0.78rem; padding:10px 22px;">Fazer Pedido</a>
-            </div>
-            <div>
-                <h4 class="footer-titulo">Navegação</h4>
-                <ul class="footer-links">
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="sobre.html">Sobre Nós</a></li>
-                    <li><a href="servicos.html">Serviços e Produtos</a></li>
-                    <li><a href="galeria.html">Galeria</a></li>
-                    <li><a href="contato.html">Contato</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="footer-titulo">Produtos</h4>
-                <ul class="footer-links">
-                    <li><a href="servicos.html">Pacote R$ 5,00</a></li>
-                    <li><a href="servicos.html">Pacote R$ 7,00</a></li>
-                    <li><a href="contato.html">Encomendas</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="footer-titulo">Contato</h4>
-                <div class="footer-contato">
-                    <p>📍 Agrovila 9, Serra do Ramalho — BA</p>
-                    <p>📞 <a href="tel:+5577920545000" style="color:var(--azul-gelo);">+55 77 9205-4500</a></p>
-                    <p>🕐 Segunda a Sábado: 7h–19h</p>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 Gelos Carvalho. Todos os direitos reservados.</p>
-            <p>Desenvolvido por <span>Arthur Carvalho de Souza</span> &mdash; Programação Web &mdash; IF Baiano</p>
-        </div>
-    </footer>
+<?php require __DIR__ . '/includes/site_rodape.php'; ?>
 
     <script>
         /* Animações de entrada */

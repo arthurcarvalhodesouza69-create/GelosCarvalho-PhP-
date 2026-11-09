@@ -1,114 +1,73 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Entre em contato com a Gelos Carvalho — faça seu pedido pelo telefone, WhatsApp ou formulário.">
-    <title>Contato | Gelos Carvalho</title>
-    <link rel="icon" type="image/jpeg" href="img/Gelos_Carvalho_Logo_Mestre.png">
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        /* Sucesso do formulário */
-        .form-sucesso {
-            display: none;
-            background: rgba(14,165,233,0.15);
-            border: 1px solid var(--azul-gelo);
-            border-radius: var(--raio);
-            padding: 24px;
-            text-align: center;
-            margin-top: 20px;
-            animation: fadeUp 0.5s ease;
+<?php
+require_once __DIR__ . '/includes/site.php';
+
+// O token CSRF do formulário depende da sessão, aberta antes de qualquer saída.
+sessao_iniciar();
+
+$produtos = produtos_ativos();
+$campos = ['nome' => '', 'telefone' => '', 'email' => '', 'pedido' => '', 'quantidade' => '', 'mensagem' => ''];
+$errosContato = [];
+$enviado = isset($_GET['enviado']);
+
+// Recebe o formulário de contato e grava a mensagem para o painel.
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    foreach ($campos as $nome => $valor) {
+        $campos[$nome] = is_string($_POST[$nome] ?? null) ? trim($_POST[$nome]) : '';
+    }
+
+    $tipo = null;
+    $produtoId = null;
+    if (preg_match('/^p(\d+)$/', $campos['pedido'], $partes) && isset($produtos[(int) $partes[1]])) {
+        $tipo = 'produto';
+        $produtoId = (int) $partes[1];
+    } elseif (in_array($campos['pedido'], ['ambos', 'atacado', 'duvida'], true)) {
+        $tipo = $campos['pedido'];
+    } elseif ($campos['pedido'] !== '') {
+        $errosContato[] = 'Selecione um tipo de pedido válido.';
+    }
+
+    if (!csrf_valido()) {
+        $errosContato[] = 'Sua sessão expirou. Envie o formulário novamente.';
+    }
+    if ($campos['nome'] === '' || mb_strlen($campos['nome']) > 120) {
+        $errosContato[] = 'Informe seu nome (até 120 caracteres).';
+    }
+    if ($campos['telefone'] === '' || mb_strlen($campos['telefone']) > 30) {
+        $errosContato[] = 'Informe um telefone válido.';
+    }
+    if ($campos['email'] !== '' && (!filter_var($campos['email'], FILTER_VALIDATE_EMAIL) || mb_strlen($campos['email']) > 160)) {
+        $errosContato[] = 'Informe um e-mail válido.';
+    }
+    $quantidade = null;
+    if ($campos['quantidade'] !== '') {
+        $quantidade = filter_var($campos['quantidade'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 100000]]);
+        if ($quantidade === false) {
+            $errosContato[] = 'Informe uma quantidade válida.';
         }
+    }
+    if ($campos['mensagem'] === '' || mb_strlen($campos['mensagem']) > 2000) {
+        $errosContato[] = 'Escreva sua mensagem (até 2000 caracteres).';
+    }
 
-        .form-sucesso.visivel { display: block; }
+    if (!$errosContato) {
+        db()->prepare('INSERT INTO mensagens (nome, telefone, email, tipo, produto_id, quantidade, mensagem) VALUES (?, ?, ?, ?, ?, ?, ?)')
+            ->execute([$campos['nome'], $campos['telefone'], $campos['email'] ?: null, $tipo, $produtoId, $quantidade, $campos['mensagem']]);
+        redirecionar('contato.php?enviado=1#form-sucesso');
+    }
+}
 
-        .form-sucesso .sucesso-icone {
-            font-size: 2.5rem;
-            margin-bottom: 12px;
-        }
+$pagina = [
+    'titulo'    => 'Contato | Gelos Carvalho',
+    'descricao' => 'Entre em contato com a Gelos Carvalho — faça seu pedido pelo telefone, WhatsApp ou formulário.',
+    'ativo'     => 'contato.php',
+    'audio'     => 'aquatic_ambience.mp3',
+    'css'       => 'css/contato.css',
+];
+require __DIR__ . '/includes/site_topo.php';
+?>
 
-        .form-sucesso h4 {
-            color: var(--azul-gelo);
-            margin-bottom: 8px;
-            font-family: var(--fonte-titulo);
-            letter-spacing: 1px;
-        }
-
-        .form-sucesso p {
-            color: var(--cinza-medio);
-            font-size: 0.88rem;
-        }
-
-        /* Mapa placeholder */
-        .mapa-placeholder {
-            background: rgba(12,42,69,0.7);
-            border: 1px solid rgba(14,165,233,0.2);
-            border-radius: var(--raio-grande);
-            height: 300px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 32px;
-            text-align: center;
-        }
-
-        .mapa-placeholder span { font-size: 3rem; }
-        .mapa-placeholder h4 { color: var(--branco); font-size: 1rem; }
-        .mapa-placeholder p  { color: var(--cinza-medio); font-size: 0.85rem; }
-
-        /* WhatsApp botão flutuante */
-        .whatsapp-float {
-            position: fixed;
-            bottom: 32px;
-            right: 32px;
-            width: 60px;
-            height: 60px;
-            background: #25D366;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            box-shadow: 0 8px 32px rgba(37,211,102,0.4);
-            z-index: 999;
-            transition: all 0.3s ease;
-            animation: pulsar 3s ease-in-out infinite;
-        }
-
-        .whatsapp-float:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 40px rgba(37,211,102,0.6);
-        }
-    </style>
-</head>
-<body>
-    <audio autoplay loop> <source src="audio/aquatic_ambience.mp3" type="audio/mpeg"> </audio>
     <!-- WhatsApp Flutuante -->
-    <a href="https://wa.me/5577920545000" target="_blank" class="whatsapp-float" title="Fale pelo WhatsApp">💬</a>
-
-    <!-- ======== HEADER ======== -->
-    <header>
-        <div class="header-inner">
-            <a href="index.html" class="logo">
-                <div class="logo-icone"><img src="img/Gelos_Carvalho_Logo_Mestre.png" alt="logo_gelo"></div>
-                <div class="logo-texto">
-                    <span class="logo-nome">Gelos Carvalho</span>
-                    <span class="logo-slogan">Frescor que você sente</span>
-                </div>
-            </a>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="sobre.html">Sobre</a></li>
-                    <li><a href="servicos.html">Serviços</a></li>
-                    <li><a href="galeria.html">Galeria</a></li>
-                    <li><a href="contato.html" class="ativo">Contato</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <a href="https://wa.me/<?= e(cfg('telefone_link')) ?>" target="_blank" class="whatsapp-float" title="Fale pelo WhatsApp">💬</a>
 
     <!-- ======== MAIN ======== -->
     <main>
@@ -143,7 +102,7 @@
                             <div class="contato-item-icone">📞</div>
                             <div class="contato-item-texto">
                                 <h4>Telefone &amp; WhatsApp</h4>
-                                <p><a href="tel:+5577920545000" style="color:var(--branco);">+55 77 9205-4500</a></p>
+                                <p><a href="tel:+<?= e(cfg('telefone_link')) ?>" style="color:var(--branco);"><?= e(cfg('telefone_exibicao')) ?></a></p>
                                 <span>Ligue ou mande mensagem</span>
                             </div>
                         </div>
@@ -152,8 +111,8 @@
                             <div class="contato-item-icone">📍</div>
                             <div class="contato-item-texto">
                                 <h4>Endereço</h4>
-                                <p>Agrovila 9 — Serra do Ramalho</p>
-                                <span>Bahia, Brasil</span>
+                                <p><?= e(cfg('endereco')) ?></p>
+                                <span><?= e(cfg('regiao')) ?></span>
                             </div>
                         </div>
 
@@ -161,8 +120,8 @@
                             <div class="contato-item-icone">🕐</div>
                             <div class="contato-item-texto">
                                 <h4>Horário de Funcionamento</h4>
-                                <p>Segunda a Sábado: 7h às 19h</p>
-                                <span>Domingo: sob consulta</span>
+                                <p><?= e(cfg('horario_resumo')) ?></p>
+                                <span><?= e(cfg('horario_domingo')) ?></span>
                             </div>
                         </div>
 
@@ -170,8 +129,8 @@
                             <div class="contato-item-icone">🚗</div>
                             <div class="contato-item-texto">
                                 <h4>Área de Entrega</h4>
-                                <p>Agrovila 9 e regiões vizinhas</p>
-                                <span>Serra do Ramalho — BA</span>
+                                <p><?= e(cfg('area_entrega')) ?></p>
+                                <span><?= e(cfg('area_entrega_detalhe')) ?></span>
                             </div>
                         </div>
                     </div>
@@ -211,41 +170,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+<?php foreach (consulta('SELECT * FROM horarios ORDER BY ordem, id') as $horario): ?>
                                     <tr>
-                                        <td>Segunda-feira</td>
-                                        <td>7h00 – 19h00</td>
-                                        <td style="color:#4ade80;">● Aberto</td>
+                                        <td><?= e($horario['dia']) ?></td>
+                                        <td><?= e($horario['horario']) ?></td>
+                                        <td style="color:<?= $horario['aberto'] ? '#4ade80' : '#f87171' ?>;">● <?= $horario['aberto'] ? 'Aberto' : 'Consultar' ?></td>
                                     </tr>
-                                    <tr>
-                                        <td>Terça-feira</td>
-                                        <td>7h00 – 19h00</td>
-                                        <td style="color:#4ade80;">● Aberto</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Quarta-feira</td>
-                                        <td>7h00 – 19h00</td>
-                                        <td style="color:#4ade80;">● Aberto</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Quinta-feira</td>
-                                        <td>7h00 – 19h00</td>
-                                        <td style="color:#4ade80;">● Aberto</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Sexta-feira</td>
-                                        <td>7h00 – 19h00</td>
-                                        <td style="color:#4ade80;">● Aberto</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Sábado</td>
-                                        <td>7h00 – 16h00</td>
-                                        <td style="color:#4ade80;">● Aberto</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Domingo</td>
-                                        <td>—</td>
-                                        <td style="color:#f87171;">● Consultar</td>
-                                    </tr>
+<?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -256,81 +187,64 @@
                 <div class="form-card animar animar-delay-2">
                     <h3>✉️ Envie uma Mensagem</h3>
 
-                    <form id="formulario-contato" novalidate>
+<?php if ($errosContato): ?>
+                    <div role="alert" style="background:rgba(248,113,113,0.12); border:1px solid #f87171; border-radius:var(--raio); padding:16px; margin-bottom:20px; color:var(--branco-gelo); font-size:0.88rem;">
+<?php foreach ($errosContato as $erroContato): ?>
+                        <p><?= e($erroContato) ?></p>
+<?php endforeach; ?>
+                    </div>
+<?php endif; ?>
+
+<?php if (!$enviado): ?>
+                    <form id="formulario-contato" method="post" action="contato.php" novalidate>
+                        <?= csrf_campo() ?>
                         <div class="form-row">
                             <div class="form-grupo">
                                 <label for="nome">Nome Completo *</label>
-                                <input
-                                    type="text"
-                                    id="nome"
-                                    name="nome"
-                                    placeholder="Seu nome"
-                                    required
-                                >
+                                <input type="text" id="nome" name="nome" placeholder="Seu nome" maxlength="120" value="<?= e($campos['nome']) ?>" required>
                             </div>
                             <div class="form-grupo">
                                 <label for="telefone">Telefone / WhatsApp *</label>
-                                <input
-                                    type="tel"
-                                    id="telefone"
-                                    name="telefone"
-                                    placeholder="(77) 99999-9999"
-                                    required
-                                >
+                                <input type="tel" id="telefone" name="telefone" placeholder="(77) 99999-9999" maxlength="30" value="<?= e($campos['telefone']) ?>" required>
                             </div>
                         </div>
 
                         <div class="form-grupo">
                             <label for="email">E-mail</label>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                placeholder="seu@email.com (opcional)"
-                            >
+                            <input type="email" id="email" name="email" placeholder="seu@email.com (opcional)" maxlength="160" value="<?= e($campos['email']) ?>">
                         </div>
 
                         <div class="form-grupo">
                             <label for="pedido">Tipo de Pedido</label>
                             <select id="pedido" name="pedido">
                                 <option value="">Selecione...</option>
-                                <option value="pacote-5">Pacote de Gelo — R$ 5,00</option>
-                                <option value="pacote-7">Pacote de Gelo — R$ 7,00</option>
-                                <option value="ambos">Ambos os Tamanhos</option>
-                                <option value="atacado">Compra em Atacado</option>
-                                <option value="duvida">Dúvida / Informação</option>
+<?php foreach ($produtos as $produto): ?>
+                                <option value="p<?= (int) $produto['id'] ?>" <?= $campos['pedido'] === 'p' . $produto['id'] ? 'selected' : '' ?>><?= e($produto['nome'] . ' — ' . moeda($produto['preco'])) ?></option>
+<?php endforeach; ?>
+<?php foreach (['ambos' => 'Ambos os Tamanhos', 'atacado' => 'Compra em Atacado', 'duvida' => 'Dúvida / Informação'] as $opcao => $rotulo): ?>
+                                <option value="<?= $opcao ?>" <?= $campos['pedido'] === $opcao ? 'selected' : '' ?>><?= $rotulo ?></option>
+<?php endforeach; ?>
                             </select>
                         </div>
 
                         <div class="form-grupo">
                             <label for="quantidade">Quantidade de Pacotes</label>
-                            <input
-                                type="number"
-                                id="quantidade"
-                                name="quantidade"
-                                placeholder="Ex: 5"
-                                min="1"
-                            >
+                            <input type="number" id="quantidade" name="quantidade" placeholder="Ex: 5" min="1" value="<?= e($campos['quantidade']) ?>">
                         </div>
 
                         <div class="form-grupo">
                             <label for="mensagem">Mensagem *</label>
-                            <textarea
-                                id="mensagem"
-                                name="mensagem"
-                                placeholder="Escreva sua mensagem, pedido ou dúvida aqui..."
-                                required
-                                rows="5"
-                            ></textarea>
+                            <textarea id="mensagem" name="mensagem" placeholder="Escreva sua mensagem, pedido ou dúvida aqui..." maxlength="2000" required rows="5"><?= e($campos['mensagem']) ?></textarea>
                         </div>
 
                         <button type="submit" class="btn btn-primario form-btn">
                             📩 Enviar Mensagem
                         </button>
                     </form>
+<?php endif; ?>
 
                     <!-- Mensagem de sucesso -->
-                    <div class="form-sucesso" id="form-sucesso">
+                    <div class="form-sucesso<?= $enviado ? ' visivel' : '' ?>" id="form-sucesso">
                         <div class="sucesso-icone">✅</div>
                         <h4>Mensagem Enviada!</h4>
                         <p>Obrigado pelo contato! Em breve a família Carvalho entrará em contato com você.</p>
@@ -340,8 +254,8 @@
                     <div style="margin-top:24px; padding:16px; background:rgba(14,165,233,0.08); border-radius:var(--raio); border:1px dashed rgba(14,165,233,0.3);">
                         <p style="color:var(--cinza-medio); font-size:0.82rem; text-align:center;">
                             💬 Prefere o <strong style="color:var(--azul-gelo);">WhatsApp</strong>?
-                            <a href="https://wa.me/5577920545000" target="_blank" style="color:var(--azul-gelo); font-weight:700; display:block; margin-top:8px;">
-                                Clique aqui — +55 77 9205-4500
+                            <a href="https://wa.me/<?= e(cfg('telefone_link')) ?>" target="_blank" style="color:var(--azul-gelo); font-weight:700; display:block; margin-top:8px;">
+                                Clique aqui — <?= e(cfg('telefone_exibicao')) ?>
                             </a>
                         </p>
                     </div>
@@ -357,81 +271,19 @@
             </div>
 
             <div class="cards-grid animar" style="margin-bottom:40px;">
+<?php foreach (consulta('SELECT * FROM faqs WHERE ativo = 1 ORDER BY ordem, id') as $faq): ?>
                 <article class="card">
-                    <h3 style="font-size:0.9rem; margin-bottom:10px;">❓ Vocês fazem entrega?</h3>
-                    <p>Sim! Entregamos na Agrovila 8 e nas comunidades vizinhas de Serra do Ramalho. Entre em contato para confirmar sua área.</p>
+                    <h3 style="font-size:0.9rem; margin-bottom:10px;">❓ <?= e($faq['pergunta']) ?></h3>
+                    <p><?= e($faq['resposta']) ?></p>
                 </article>
-                <article class="card">
-                    <h3 style="font-size:0.9rem; margin-bottom:10px;">❓ Posso pedir em grandes quantidades?</h3>
-                    <p>Claro! Atendemos tanto pedidos individuais quanto atacado para comércios e eventos. Consulte disponibilidade conosco.</p>
-                </article>
-                <article class="card">
-                    <h3 style="font-size:0.9rem; margin-bottom:10px;">❓ O gelo é feito com água filtrada?</h3>
-                    <p>Sim! Usamos apenas água filtrada e tratada em todo o processo de fabricação, garantindo um produto limpo e seguro.</p>
-                </article>
-                <article class="card">
-                    <h3 style="font-size:0.9rem; margin-bottom:10px;">❓ Qual a diferença entre os pacotes?</h3>
-                    <p>O pacote de R$5 é tamanho padrão, ideal para uso doméstico. O de R$7 é maior, perfeito para festas e eventos.</p>
-                </article>
-                <article class="card">
-                    <h3 style="font-size:0.9rem; margin-bottom:10px;">❓ Atendem no domingo?</h3>
-                    <p>Aos domingos o atendimento é sob consulta. Ligue ou mande WhatsApp para verificar disponibilidade no dia.</p>
-                </article>
-                <article class="card">
-                    <h3 style="font-size:0.9rem; margin-bottom:10px;">❓ Posso retirar na fábrica?</h3>
-                    <p>Sim! Você pode retirar pessoalmente na nossa fábrica, localizada na Agrovila 8, Serra do Ramalho — BA.</p>
-                </article>
+<?php endforeach; ?>
             </div>
 
         </div>
     </main>
 
     <!-- ======== FOOTER ======== -->
-    <footer>
-        <div class="footer-grid">
-            <div class="footer-marca">
-                <div class="logo">
-                    <div class="logo-icone"><img src="img/Gelos_Carvalho_Logo_Mestre.png" alt="logo_gelo"></div>
-                    <div class="logo-texto">
-                        <span class="logo-nome">Gelos Carvalho</span>
-                        <span class="logo-slogan">Frescor que você sente</span>
-                    </div>
-                </div>
-                <p>Empresa familiar de fabricação e venda de gelo, localizada na Agrovila 9, Serra do Ramalho — Bahia.</p>
-                <a href="contato.html" class="btn btn-primario" style="font-size:0.78rem; padding:10px 22px;">Fazer Pedido</a>
-            </div>
-            <div>
-                <h4 class="footer-titulo">Navegação</h4>
-                <ul class="footer-links">
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="sobre.html">Sobre Nós</a></li>
-                    <li><a href="servicos.html">Serviços e Produtos</a></li>
-                    <li><a href="galeria.html">Galeria</a></li>
-                    <li><a href="contato.html">Contato</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="footer-titulo">Produtos</h4>
-                <ul class="footer-links">
-                    <li><a href="servicos.html">Pacote R$ 5,00</a></li>
-                    <li><a href="servicos.html">Pacote R$ 7,00</a></li>
-                    <li><a href="contato.html">Encomendas</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="footer-titulo">Contato</h4>
-                <div class="footer-contato">
-                    <p>📍 Agrovila 9, Serra do Ramalho — BA</p>
-                    <p>📞 <a href="tel:+5577920545000" style="color:var(--azul-gelo);">+55 77 9205-4500</a></p>
-                    <p>🕐 Segunda a Sábado: 7h–19h</p>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 Gelos Carvalho. Todos os direitos reservados.</p>
-            <p>Desenvolvido por <span>Arthur Carvalho de Souza</span> &mdash; Programação Web &mdash; IF Baiano</p>
-        </div>
-    </footer>
+<?php require __DIR__ . '/includes/site_rodape.php'; ?>
 
     <script>
         /* Animações */
@@ -442,39 +294,20 @@
         }, { threshold: 0.1 });
         document.querySelectorAll('.animar').forEach(el => observer.observe(el));
 
-        /* Formulário — simulação de envio */
-        document.getElementById('formulario-contato').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const nome = document.getElementById('nome').value.trim();
-            const mensagem = document.getElementById('mensagem').value.trim();
-            const telefone = document.getElementById('telefone').value.trim();
-
-            if (!nome || !mensagem || !telefone) {
-                alert('Por favor, preencha os campos obrigatórios: Nome, Telefone e Mensagem.');
-                return;
-            }
-
-            /* Simula envio */
-            const btn = this.querySelector('button[type=submit]');
-            btn.textContent = '⏳ Enviando...';
-            btn.disabled = true;
-
-            setTimeout(() => {
-                this.style.display = 'none';
-                document.getElementById('form-sucesso').classList.add('visivel');
-            }, 1500);
-        });
 
         /* Máscara de telefone */
-        document.getElementById('telefone').addEventListener('input', function() {
-            let v = this.value.replace(/\D/g, '');
-            if (v.length <= 10) {
-                v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
-            } else {
-                v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
-            }
-            this.value = v;
-        });
+        const campoTelefone = document.getElementById('telefone');
+        if (campoTelefone) {
+            campoTelefone.addEventListener('input', function() {
+                let v = this.value.replace(/\D/g, '');
+                if (v.length <= 10) {
+                    v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+                } else {
+                    v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+                }
+                this.value = v;
+            });
+        }
     </script>
 </body>
 </html>
