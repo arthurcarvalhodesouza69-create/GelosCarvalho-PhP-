@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/layout.php';
 exigir_login();
 
 $campos = [
-    'telefone_exibicao'    => ['Telefone exibido', 'Exemplo: +55 77 9205-4500'],
+    'telefone_exibicao'    => ['Telefone exibido', 'Exemplo: +55 77 92054-5000'],
     'telefone_link'        => ['Telefone para links e WhatsApp', 'Somente números, com DDI e DDD.'],
     'endereco'             => ['Endereço', ''],
     'endereco_rodape'      => ['Endereço no rodapé', ''],

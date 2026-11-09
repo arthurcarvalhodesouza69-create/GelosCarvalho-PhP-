@@ -130,7 +130,7 @@ require __DIR__ . '/includes/site_topo.php';
                 <ol class="lista-ordenada">
                     <li>Identificamos a necessidade de gelo de qualidade na Agrovila 9 e na região de Serra do Ramalho, onde o acesso era limitado.</li>
                     <li>A família Carvalho investiu em equipamentos de fabricação e aprendeu as melhores práticas de higiene e produção de gelo.</li>
-                    <li>Iniciamos as vendas de forma local, atendendo vizinhos, amigos e os primeiros clientes da Agrovila 8.</li>
+                    <li>Iniciamos as vendas de forma local, atendendo vizinhos, amigos e os primeiros clientes da Agrovila 9.</li>
                     <li>Com o crescimento da demanda, expandimos nossa capacidade de produção e passamos a atender eventos e comércios da região.</li>
                     <li>Hoje, a Gelos Carvalho é referência em qualidade e confiança, com centenas de clientes satisfeitos em toda a Serra do Ramalho.</li>
                 </ol>

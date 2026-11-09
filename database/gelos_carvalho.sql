@@ -187,12 +187,12 @@ INSERT INTO usuarios (nome, email, senha_hash, papel) VALUES
 ('Administrador', 'admin@geloscarvalho.com', '$2y$10$YryDi1GNB6VeLm5x.HfeUurFbMy2D6njI/efCXvMVyYAeXbafCfjq', 'admin');
 
 INSERT INTO configuracoes (chave, valor) VALUES
-('telefone_exibicao', '+55 77 9205-4500'),
+('telefone_exibicao', '+55 77 92054-5000'),
 ('telefone_link', '5577920545000'),
 ('endereco', 'Agrovila 9 — Serra do Ramalho'),
 ('endereco_rodape', 'Agrovila 9, Serra do Ramalho — BA'),
 ('regiao', 'Bahia, Brasil'),
-('horario_resumo', 'Segunda a Sábado: 7h–19h'),
+('horario_resumo', 'Seg. a Sex.: 7h–19h | Sáb.: 7h–16h'),
 ('horario_domingo', 'Domingo: sob consulta'),
 ('area_entrega', 'Agrovila 9 e regiões vizinhas'),
 ('area_entrega_detalhe', 'Serra do Ramalho — BA'),
@@ -243,7 +243,7 @@ INSERT INTO fotos_galeria (categoria_id, legenda, texto_alt, imagem, grande, ord
 (2, '🧊 Pacote R$ 5,00', 'Pacote de gelo R$5', 'img/galeria-pacote-5.jpg', 0, 2),
 (1, '⚙️ Máquina em Operação', 'Máquina de gelo em operação', 'img/galeria-maquina.jpg', 0, 3),
 (2, '🎉 Pacote Família R$ 7,00', 'Pacote de gelo R$7 — Família', 'img/galeria-pacote-7.jpg', 0, 4),
-(4, '📍 Agrovila 9, Serra do Ramalho', 'Agrovila 8 — Serra do Ramalho', 'img/galeria-agrovila.jpg', 0, 5),
+(4, '📍 Agrovila 9, Serra do Ramalho', 'Agrovila 9 — Serra do Ramalho', 'img/galeria-agrovila.jpg', 0, 5),
 (3, '🚗 Entrega Satisfeita!', 'Entrega de gelo ao cliente', 'img/galeria-entrega.jpg', 1, 6),
 (1, '📦 Estoque Organizado', 'Estoque de pacotes de gelo', 'img/galeria-estoque.jpg', 0, 7),
 (3, '😄 Cliente Feliz!', 'Cliente satisfeito com o gelo', 'img/galeria-cliente.jpg', 0, 8),
@@ -263,12 +263,12 @@ INSERT INTO depoimentos (autor, localidade, texto, nota, ordem) VALUES
 ('Barack Obama', 'Agrovila 8', 'Atendimento nota 10. Fiz o pedido de manhã e já chegou antes do meio-dia. Família Carvalho de confiança total!', 5, 3);
 
 INSERT INTO faqs (pergunta, resposta, ordem) VALUES
-('Vocês fazem entrega?', 'Sim! Entregamos na Agrovila 8 e nas comunidades vizinhas de Serra do Ramalho. Entre em contato para confirmar sua área.', 1),
+('Vocês fazem entrega?', 'Sim! Entregamos na Agrovila 9 e nas comunidades vizinhas de Serra do Ramalho. Entre em contato para confirmar sua área.', 1),
 ('Posso pedir em grandes quantidades?', 'Claro! Atendemos tanto pedidos individuais quanto atacado para comércios e eventos. Consulte disponibilidade conosco.', 2),
 ('O gelo é feito com água filtrada?', 'Sim! Usamos apenas água filtrada e tratada em todo o processo de fabricação, garantindo um produto limpo e seguro.', 3),
 ('Qual a diferença entre os pacotes?', 'O pacote de R$5 é tamanho padrão, ideal para uso doméstico. O de R$7 é maior, perfeito para festas e eventos.', 4),
 ('Atendem no domingo?', 'Aos domingos o atendimento é sob consulta. Ligue ou mande WhatsApp para verificar disponibilidade no dia.', 5),
-('Posso retirar na fábrica?', 'Sim! Você pode retirar pessoalmente na nossa fábrica, localizada na Agrovila 8, Serra do Ramalho — BA.', 6);
+('Posso retirar na fábrica?', 'Sim! Você pode retirar pessoalmente na nossa fábrica, localizada na Agrovila 9, Serra do Ramalho — BA.', 6);
 
 INSERT INTO diferenciais (secao, icone, titulo, descricao, ordem) VALUES
 ('inicio', '💧', 'Água Filtrada', 'Utilizamos apenas água de qualidade, filtrada e tratada, garantindo um gelo limpo, transparente e seguro para o consumo.', 1),
@@ -277,7 +277,7 @@ INSERT INTO diferenciais (secao, icone, titulo, descricao, ordem) VALUES
 ('inicio', '🚀', 'Entrega Ágil', 'Atendemos a Agrovila 9 e região com rapidez. Seu pedido fica pronto e sai fresquinho direto da nossa fábrica para a sua mão.', 4),
 ('servicos', '🏠', 'Empresa Familiar', 'Somos uma família que se dedicou inteiramente à qualidade do produto. Cada pacote é feito com o cuidado de quem coloca amor no que faz.', 1),
 ('servicos', '💰', 'Preço Justo', 'Nossos preços são acessíveis porque acreditamos que todo mundo merece gelo de qualidade. R$5 e R$7 para qualquer bolso.', 2),
-('servicos', '📍', 'Atendimento Local', 'Estamos aqui na Agrovila 8, pertinho de você. Conhecemos nossa comunidade e sabemos o que o cliente precisa.', 3),
+('servicos', '📍', 'Atendimento Local', 'Estamos aqui na Agrovila 9, pertinho de você. Conhecemos nossa comunidade e sabemos o que o cliente precisa.', 3),
 ('sobre', '🫱🏾‍🫲🏽', 'Confiança acima de tudo', 'Construímos nossa reputação entregando o que prometemos, sempre com transparência e honestidade.', 1),
 ('sobre', '💎', 'Qualidade sem abrir mão', 'Água filtrada, processo limpo e embalagens seguras. Cada detalhe importa no que entregamos.', 2),
 ('sobre', '🌱', 'Crescimento com raízes', 'Crescemos pensando na nossa comunidade. Cada venda fortalece famílias e a economia local.', 3);
