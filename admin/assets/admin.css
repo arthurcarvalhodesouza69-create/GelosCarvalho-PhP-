@@ -32,7 +32,8 @@ body { background: var(--fundo); }
 .painel-lateral {
     width: 260px;
     flex-shrink: 0;
-    background: var(--azul-profundo);
+    /* O !important vence o fundo transparente que o Bootstrap aplica em .offcanvas-lg. */
+    background-color: var(--azul-profundo) !important;
     color: #fff;
     padding: 20px 14px;
     overflow-y: auto;
